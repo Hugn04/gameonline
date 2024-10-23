@@ -119,6 +119,7 @@ const monsterInGame = {
     get maxHealth() { return this.hpGear + this.hpLv },
     get maxDame() { return this.dameGear + this.dameLv },
     get maxArmor() { return this.armorGear + this.armorLv },
+    //get nameEnemy() { return this.name },
 
     // Phương thức tính hpLv cho từng nhân vật
     getHpLv() {return 100 + (this.level - 1) * 20},
@@ -126,12 +127,16 @@ const monsterInGame = {
     getarmorLv() { return 3 + (this.level - 1) * 2 },
     getmaxHealth() { return this.hpGear + this.hpLv },
     getmaxDame() { return this.dameGear + this.dameLv },
-    getmaxArmor() { return this.armorGear + this.armorLv }
+    getmaxArmor() { return this.armorGear + this.armorLv },
+    getnameEnemy() { return this.name },
 };
 
 // Định nghĩa cả getter và setter cho thuộc tính name
-function monsterIsInGame(idMonster) {
 
+function monsterIsInGame(idMonster) {
+    
+    const characterr = getPlayer()
+    
     Object.keys(mapsData[characterr.mapI].enemies[idMonster]).forEach(prop => {
         Object.defineProperty(monsterInGame, prop, {
             get: function () { return mapsData[characterr.mapI].enemies[idMonster][prop] },
@@ -144,18 +149,21 @@ function monsterIsInGame(idMonster) {
 
 
 
+var namePlayer = document.getElementById("name-player")
 var manaMe = document.getElementById("mana-bar")
 var manaMon = document.getElementById("monster-mana-bar")
 var armorMe = document.getElementById("armorMe")
 var armorMon = document.getElementById("armorMon")
-// Cập nhật thông tin nhân vật
 function displayCharacterInfo() {
+    // Cập nhật thông tin nhân vật
+    const player = getPlayer()
     document.getElementById('current-health').innerText = characterInGame.currentHealth;
     document.getElementById('max-health').innerText = characterInGame.maxHealth;
     document.getElementById('current-mana').innerText = characterInGame.mana;
     document.getElementById('max-mana').innerText = characterInGame.maxMana;
     armorMe.innerText = characterInGame.armor;
     const healthBar = document.getElementById('health-bar');
+    namePlayer.innerText= player ?  player.name : ""
     healthBar.style.width = (characterInGame.currentHealth / characterInGame.maxHealth) * 100 + '%';
     manaMe.style.width = (characterInGame.mana / characterInGame.maxMana) * 100 + '%';
     if (characterInGame.currentHealth <= characterInGame.maxHealth * 0.1) {
@@ -189,13 +197,14 @@ function displayCharacterInfo() {
     }
 
 }
-
+//name-other
 // Cập nhật thông tin quái vật
 function displayMonsterInfo() {
     document.getElementById('current-monster-health').innerText = monsterInGame.currentHealth;
     document.getElementById('max-monster-health').innerText = monsterInGame.maxHealth;
     document.getElementById('current-monster-mana').innerText = monsterInGame.mana;
     document.getElementById('max-monster-mana').innerText = monsterInGame.maxMana;
+    document.getElementById('name-other').innerText = monsterInGame.name;
     armorMon.innerText = monsterInGame.armor;
     const monsterHealthBar = document.getElementById('monster-health-bar');
     monsterHealthBar.style.width = (monsterInGame.currentHealth / monsterInGame.maxHealth) * 100 + '%';

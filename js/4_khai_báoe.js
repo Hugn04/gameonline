@@ -56,23 +56,60 @@ var board_table = document.getElementById("board");
 var startG = 0, click1 = undefined
 var nammuoiW, nammuoiH
 var offsetWidthTile, offsetHeightTile
+let idOther=""
 function startGame() {
-    document.getElementById("board").style.width = '95%'
-    document.getElementById("board").style.height = document.getElementById("board").offsetWidth + 'px'
-    var nammuoiW = (board_table.offsetWidth - 14) / cột
-    var nammuoiH = (board_table.offsetHeight - 14)/ hàng 
-    for (let r = 0; r < hàng; r++) {let row = [];
-        for (let c = 0; c < cột; c++){let tile = createTile(r, c, row)}; board.push(row);
+    idOther=1
+    data = ""
+    if(!data){
+        document.getElementById("board").style.width = '95%'
+        document.getElementById("board").style.height = document.getElementById("board").offsetWidth + 'px'
+        var nammuoiW = (board_table.offsetWidth - 14) / cột
+        var nammuoiH = (board_table.offsetHeight - 14)/ hàng 
+        for (let r = 0; r < hàng; r++) {let row = [];
+            for (let c = 0; c < cột; c++){
+                let tile = createTile(r, c, row)}; 
+                board.push(row);
+                
+        }
+        idOther && handleHashData()
+    }
+
+
+    socket.on('newState', data=>{
+        updateGame(data.data)
+        
+    })
+    function updateGame(data){
+        for (let r = 0; r < hàng; r++) {let row = [];
+            for (let c = 0; c < cột; c++){
+                let tile = createTile(r, c, row, data.data)}; 
+                board.push(row);
+                
+        }
     }
     
-    function createTile(r, c, row) {
+    function handleHashData(){
+        const tempData = []
+        board.forEach((c, index)=>{
+            tempData.push([])
+            c.forEach(r=>{
+                tempData[index].push(r.src)
+            })
+        })
+        socket.emit('gameState', {data:tempData, id:idOther})
+    }
+    
+    
+    function createTile(r, c, row, data=null) {
         // --------------- tạo thẻ cha, ảnh 1, ảnh 2
-        let tileDad = createTag("div"), tile = createTag("img") //y = createTag("img")
+        let tileDad = createTag("div"), 
+        tile = createTag("img") //y = createTag("img")
         tileDad.style.position = "absolute"
         tileDad.style.width = `${nammuoiW}px`
         tileDad.style.height = `${nammuoiH}px`
-
-        tile.src = randomCandy(); tile.style.opacity = "1";
+        
+        tile.src = randomCandy(); 
+        tile.style.opacity = "1";
         tile.classList.add("fc", 'offBoom');
         tile.addEventListener("click", click_Curr); tile.id = r + "-" + c;
         tile.dataset.symbolClass = 'undefined'
@@ -277,6 +314,7 @@ function readycrush() {
         if (hi) return true
     }
 }; 
+
 var timeBling = 0
     if (checkBoom()) {bling(listOfArrays, 1)}
     function bling(arrayBling, x) {

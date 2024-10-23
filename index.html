@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bệnh Viện Quỷ Dữ</title>
+    
     <style>
         .none {
             display: none;
@@ -187,6 +188,8 @@
       <link rel="stylesheet" href="css/hanhtrang.css">
 </head>
 <body>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+    <script src="./js/main.js"></script>
      <!-- Container bao quanh điện thoại để căn giữa màn hình -->
     <div id="phoneContainer" class="flexCenter">
         <!-- Khung điện thoại với khoảng cách 15px từ mỗi cạnh -->
@@ -206,11 +209,11 @@
                 </div>    
                 <!-- Tùy chọn tướng -->
                 <div class="optionDevilContainer none">
-                    <div class="optionDevilChild">tham chiến</div>
-                    <div class="optionDevilChild">Trang bị</div>
-                    <div class="optionDevilChild">Tiềm năng</div>
-                    <div class="optionDevilChild">Kĩ Năng</div>
-                    <div class="optionDevilChild">Thông Tin</div>
+                    <button class="optionDevilChild">tham chiến</button>
+                    <button class="optionDevilChild">Trang bị</button>
+                    <button class="optionDevilChild">Tiềm năng</button>
+                    <button class="optionDevilChild">Kĩ Năng</button>
+                    <button class="optionDevilChild">Thông Tin</button>
                 </div>  
                 <!-- bảng chọn tướng -->
                 <div style="width:100%; height: 100%">
@@ -352,46 +355,49 @@
                                 <style>
                                     .health-bar {
                                         border-radius: 10px;
-    border: 1px solid #000;
-    width: 94%;
-    overflow: hidden;
-    position: absolute;
-    font-size: 15px;
-    height: 29%;
-    color: black;
-    font-weight: bold;
-    left: 50%;
-    transform: translateX(-50%);
-                    }
+                                    border: 1px solid #000;
+                                    width: 94%;
+                                    overflow: hidden;
+                                    position: absolute;
+                                    font-size: 15px;
+                                    height: 29%;
+                                    color: black;
+                                    font-weight: bold;
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                                    }
                     
-                    .health-bar p {
-                        position: absolute; /* Đặt văn bản nằm trong thanh máu */
-                        width: 100%;
-                        text-align: center; /* Căn giữa ngang */
-                        top: 50%;
-                        transform: translateY(-50%); /* Căn giữa dọc */
-                        margin: 0; /* Bỏ margin mặc định của <p> */
-                        /* font-weight: bold; */
-                        z-index: 1; /* Đảm bảo văn bản luôn hiển thị trên thanh máu */
-                    }
+                                    .health-bar p {
+                                        position: absolute; /* Đặt văn bản nằm trong thanh máu */
+                                        width: 100%;
+                                        text-align: center; /* Căn giữa ngang */
+                                        top: 50%;
+                                        transform: translateY(-50%); /* Căn giữa dọc */
+                                        margin: 0; /* Bỏ margin mặc định của <p> */
+                                        /* font-weight: bold; */
+                                        z-index: 1; /* Đảm bảo văn bản luôn hiển thị trên thanh máu */
+                                    }
                     
-                    .health {
-                        border: 1px solid #0000009c;
-                        border-radius: 10px;
-                        background-color: #f00a0a;
-                        height: 100%;
-                        width: 100%; /* Ban đầu, thanh máu sẽ đầy */
-                        position: absolute; /* Để thanh máu bên dưới văn bản */
-                        top: 0;
-                        left: 0;
-                        transition: width 0.7s ease;
-                        z-index: 0; /* Thanh máu nằm bên dưới */
-                    }
+                                    .health {
+                                        border: 1px solid #0000009c;
+                                        border-radius: 10px;
+                                        background-color: #f00a0a;
+                                        height: 100%;
+                                        width: 100%; /* Ban đầu, thanh máu sẽ đầy */
+                                        position: absolute; /* Để thanh máu bên dưới văn bản */
+                                        top: 0;
+                                        left: 0;
+                                        transition: width 0.7s ease;
+                                        z-index: 0; /* Thanh máu nằm bên dưới */
+                                    }   
                                 </style>
                                 <div class="mana-bar">
                                     <p><span id="current-monster-mana">0</span> / <span id="max-monster-mana">300</span></p>
                                     <div id="monster-mana-bar" class="mana"></div>
                                 </div>
+                                <div class="name-tag">
+                                    <p id="name-other">Người chơi 1</p>
+                                 </div>
                                 <div class="rectangleSkill" style="right: 0">
                                     <div class="circleMe" id="monMiniSkill1"></div>
                                     <div class="circleMe" id="monMiniSkill2"></div>
@@ -402,44 +408,59 @@
                                     
                                     .mana-bar {
                                         background-color: #7070c5;
-    border-radius: 10px;
-    border: 1px solid #000;
-    width: 94%;
-    overflow: hidden;
-    position: absolute;
-    font-size: 15px;
-    height: 29%;
-    color: black;
-    top: 68%;
-    font-weight: bold;
-    left: 50%;
-    transform: translateX(-50%);
-                    }
-                    
-                    .mana-bar p {
-                        position: absolute; /* Đặt văn bản nằm trong thanh mana */
-                        width: 100%;
-                        text-align: center; /* Căn giữa ngang */
-                        top: 50%;
-                        background: #00000038;
-                        color: white;
-                        transform: translateY(-50%); /* Căn giữa dọc */
-                        margin: 0; /* Xóa margin mặc định của <p> */
-                        z-index: 1; /* Đảm bảo văn bản luôn nằm trên thanh mana */
-                    }
-                    
-                    .mana {
-                        transition: width 0.7s ease;
-                        border: 1px solid #000;
-                        border-radius: 10px;
-                        background-color: blue; /* Màu xanh cho thanh mana */
-                        height: 100%;
-                        width: 0%; /* Thanh mana hiện tại là 0% vì chỉ số hiện tại là 0 */
-                        position: absolute; /* Để thanh mana nằm bên dưới văn bản */
-                        top: 0;
-                        left: 0;
-                        z-index: 0; /* Thanh mana nằm bên dưới văn bản */
-                    }
+                                        border-radius: 10px;
+                                        border: 1px solid #000;
+                                        width: 94%;
+                                        overflow: hidden;
+                                        position: absolute;
+                                        font-size: 15px;
+                                        height: 29%;
+                                        color: black;
+                                        top: 68%;
+                                        font-weight: bold;
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                    }
+                                    
+                                    .mana-bar p {
+                                        position: absolute; /* Đặt văn bản nằm trong thanh mana */
+                                        width: 100%;
+                                        text-align: center; /* Căn giữa ngang */
+                                        top: 50%;
+                                        background: #00000038;
+                                        color: white;
+                                        transform: translateY(-50%); /* Căn giữa dọc */
+                                        margin: 0; /* Xóa margin mặc định của <p> */
+                                        z-index: 1; /* Đảm bảo văn bản luôn nằm trên thanh mana */
+                                    }
+                                    .name-tag{
+                                        text-align: center;
+                                        background-color: #7070c5;
+                                        /* border-radius: 10px; */
+                                        /* border: 1px solid #000; */
+                                        width: 94%;
+                                        overflow: hidden;
+                                        position: absolute;
+                                        font-size: 15px;
+                                        height: 29%;
+                                        color: black;
+                                        top: 106%;
+                                        font-weight: bold;
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                    }
+                                    .mana {
+                                        transition: width 0.7s ease;
+                                        border: 1px solid #000;
+                                        border-radius: 10px;
+                                        background-color: blue; /* Màu xanh cho thanh mana */
+                                        height: 100%;
+                                        width: 0%; /* Thanh mana hiện tại là 0% vì chỉ số hiện tại là 0 */
+                                        position: absolute; /* Để thanh mana nằm bên dưới văn bản */
+                                        top: 0;
+                                        left: 0;
+                                        z-index: 0; /* Thanh mana nằm bên dưới văn bản */
+                                    }
                     
                                 </style>
                             </div>
@@ -461,6 +482,9 @@
                                     <p><span id="current-mana">0</span> / <span id="max-mana">300</span></p>
                                     <div id="mana-bar" class="mana"></div>
                                 </div>
+                                <div class="name-tag">
+                                   <p id="name-player">Người chơi 1</p>
+                                </div>
                                 <div class="rectangleSkill" style="left: 0">
                                     <div class="circleMe" id="meMiniSkill1"></div>
                                     <div class="circleMe" id="meMiniSkill2"></div>
@@ -474,42 +498,42 @@
                     <style>
                          .rectangleSkill{
                             width: 47px;
-    height: 16px;
-    background-color: #ccc;
-    display: flex;
-    align-items: center;
-    /* padding-left: 1px; */
-    position: absolute;
-    bottom: -32%;
-        }
+                            height: 16px;
+                            background-color: #ccc;
+                            display: flex;
+                            align-items: center;
+                            /* padding-left: 1px; */
+                            position: absolute;
+                            bottom: -32%;
+                                }
 
-        .circleMe {
-            width: 10px;
-            border: 1px solid #000;
-    height: 10px;
-    background-color: gray;
-    border-radius: 50%;
-    margin-left: 4px;
-        }
-                       
-                       @keyframes slowUpAndDown {
-    0%, 100% {
-        transform: translateY(0); /* Vị trí ban đầu */
-    }
-    50% {
-        transform: translateY(-2px); /* Di chuyển lên 5px */
-    }
-}
-.shadow {
-            box-shadow: 0 0 10px red;
-        }
+                                .circleMe {
+                                    width: 10px;
+                                    border: 1px solid #000;
+                            height: 10px;
+                            background-color: gray;
+                            border-radius: 50%;
+                            margin-left: 4px;
+                                }
+                                            
+                                            @keyframes slowUpAndDown {
+                            0%, 100% {
+                                transform: translateY(0); /* Vị trí ban đầu */
+                            }
+                            50% {
+                                transform: translateY(-2px); /* Di chuyển lên 5px */
+                            }
+                        }
+                        .shadow {
+                                    box-shadow: 0 0 10px red;
+                                }
 
-.flyBtn{
-    background: #af49f7;
-    box-shadow: 0 0 10px #002eff;
-    /* color: #000000; */
-    animation: slowUpAndDown 1.3s ease-in-out infinite;
-}
+                        .flyBtn{
+                            background: #af49f7;
+                            box-shadow: 0 0 10px #002eff;
+                            /* color: #000000; */
+                            animation: slowUpAndDown 1.3s ease-in-out infinite;
+                        }
                         .inGameBattle {
                             position: absolute;
                             width: 100%;
@@ -517,7 +541,7 @@
                             background: rebeccapurple;
                         }
                         
-    #board {
+                        #board {
                             position: absolute;
                             top: 50%;
                             left: 50%;
@@ -530,81 +554,81 @@
                             overflow: hidden;
                         }
                         #board img {
-    /* width: calc(100% / 8); 
-    height: calc(100% / 8);  */
-    padding: 0px;
-    margin: 0px ;
-    position: absolute;
+                            /* width: calc(100% / 8); 
+                            height: calc(100% / 8);  */
+                            padding: 0px;
+                            margin: 0px ;
+                            position: absolute;
 
-    transition: box-shadow 0.3s ease-in-out;
-    transition: opacity 0.3s ease-in-out;
-    
-          
-}
+                            transition: box-shadow 0.3s ease-in-out;
+                            transition: opacity 0.3s ease-in-out;
+                            
+                                
+                        }
 
-.blink {
-            animation: blink 0.5s infinite; /* Chớp nháy liên tục */
-        }
+                        .blink {
+                            animation: blink 0.5s infinite; /* Chớp nháy liên tục */
+                        }
 
-        @keyframes blink {
-            0% {
-                opacity: 1; /* Ảnh hiện rõ */
-            }
-            50% {
-                opacity: 0; /* Ảnh biến mất */
-            }
-            100% {
-                opacity: 1; /* Ảnh hiện lại */
-            }
-        }
-fade-out2 {
-            opacity: 0; /* Mờ dần */
-        }
+                        @keyframes blink {
+                            0% {
+                                opacity: 1; /* Ảnh hiện rõ */
+                            }
+                            50% {
+                                opacity: 0; /* Ảnh biến mất */
+                            }
+                            100% {
+                                opacity: 1; /* Ảnh hiện lại */
+                            }
+                        }
+                        fade-out2 {
+                            opacity: 0; /* Mờ dần */
+                        }
 
-        fade-in2 {
-            opacity: 1; /* Hiện ảnh mới */
-        }
+                        fade-in2 {
+                            opacity: 1; /* Hiện ảnh mới */
+                        }
 /* Hiệu ứng focus */
-.focus {
-    border-radius: 3px;
-    position: absolute;
-    animation: pulsate 1.5s infinite;
-    box-shadow: 0 0 0 5px rgba(20, 132, 47, 1); /* Shadow màu xanh */
-    z-index: 2;
-}
+                        .focus {
+                            border-radius: 3px;
+                            position: absolute;
+                            animation: pulsate 1.5s infinite;
+                            box-shadow: 0 0 0 5px rgba(20, 132, 47, 1); /* Shadow màu xanh */
+                            z-index: 2;
+                        }
 
-@keyframes pulsate {
-    0% {
-        box-shadow: 0 0 0 5px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.7 */
-    }
-    50% {
-        box-shadow: 0 0 0 7px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.5 */
-    }
-    100% {
-        box-shadow: 0 0 0 4px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.7 */
-    }
-}
+                        @keyframes pulsate {
+                            0% {
+                                box-shadow: 0 0 0 5px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.7 */
+                            }
+                            50% {
+                                box-shadow: 0 0 0 7px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.5 */
+                            }
+                            100% {
+                                box-shadow: 0 0 0 4px rgba(20, 132, 47, 1); /* Tăng độ mờ lên 0.7 */
+                            }
+                        }
 
 /* Hiệu ứng outFocus */
-.outFocus {
-    position: absolute;
-    border-radius: 3px;
-    animation: outPulsate 1.2s forwards; /* Animation cho outFocus */
-    box-shadow: 0 0 0 5px rgba(235, 8, 8, 1); /* Shadow màu đỏ */
-    z-index: 2;
-}
+                        .outFocus {
+                            position: absolute;
+                            border-radius: 3px;
+                            animation: outPulsate 1.2s forwards; /* Animation cho outFocus */
+                            box-shadow: 0 0 0 5px rgba(235, 8, 8, 1); /* Shadow màu đỏ */
+                            z-index: 2;
+                        }
 
-@keyframes outPulsate {
-    0% {
-        box-shadow: 0 0 0 5px rgba(235, 8, 8, 1); /* Shadow ban đầu */
-    }
-    50% {
-        box-shadow: 0 0 0 7px rgba(235, 8, 8, 0.6); /* Mờ dần */
-    }
-    100% {
-        box-shadow: 0 0 0 2px rgba(235, 8, 8, 0.3); /* Không còn shadow */
-    }
-}
+                        @keyframes outPulsate {
+                            0% {
+                                box-shadow: 0 0 0 5px rgba(235, 8, 8, 1); /* Shadow ban đầu */
+                            }
+                            50% {
+                                box-shadow: 0 0 0 7px rgba(235, 8, 8, 0.6); /* Mờ dần */
+                            }
+                            100% {
+                                box-shadow: 0 0 0 2px rgba(235, 8, 8, 0.3); /* Không còn shadow */
+                            }
+                        }
 
                         
                         .top-buttons {
@@ -629,18 +653,18 @@ fade-out2 {
                         
                         .timeBox {
                             position: absolute;
-    top: 10px;
-    text-align: center;
-    left: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: translateX(-50%);
-    width: 40px;
-    border-radius: 11px;
-    height: 40px;
-    font-size: 20px;
-    background-color: red;
+                            top: 10px;
+                            text-align: center;
+                            left: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            transform: translateX(-50%);
+                            width: 40px;
+                            border-radius: 11px;
+                            height: 40px;
+                            font-size: 20px;
+                            background-color: red;
                         }
                         
                         .modal, .exit-dialog {
@@ -714,12 +738,12 @@ fade-out2 {
                         
                         .boxMeIn_Game, .boxMonIn_Game {
                             width: 39%;
-    padding: 0px 4px;
-    position: absolute;
-    height: 106%;
-    bottom: 165%;
-    color: white;
-    background-color: #333;
+                        padding: 0px 4px;
+                        position: absolute;
+                        height: 106%;
+                        bottom: 165%;
+                        color: white;
+                        background-color: #333;
                         }
                         
                         .bottom-square {
@@ -787,22 +811,27 @@ fade-out2 {
             
     </div>
 
-    <!-- khai báo thông tin gamer -->
+    <!-- main.js -->
     <script>
-         const mapsData = [
+        let players=[]
+        const mapsData = [
             {
                 id: 0,
                 backgroundColor: 'lightblue',
                 size: { width: 2000, height: 2000 },
                 characters: [
                     { 
-                        id: 'character1', position: { top: 50, left: 50 }, color: 'blue' 
+                        id: 'character1', position: { top: 0, left: 0 }, color: 'red' 
                     }
                 ],
                 objects: [
                     { 
                         size: { width: 80, height: 80 }, 
                         position: { top: 200, left: 200 }, color: 'orange' 
+                    },
+                    { 
+                        size: { width: 80, height: 80 }, 
+                        position: { top: 100, left: 200 }, color: 'orange' 
                     }
                 ],
                 enemies: [
@@ -951,6 +980,9 @@ fade-out2 {
                         armor: 0, maxMana: 300, mana: 0, // in-game
 
                         hpGear: 0, dameGear: 0, armorGear: 0, // trang bị
+                        size: { width: 50, height: 50 }, lv: 2,
+                        name: "quái Vật HAH",
+                        position: { top: 200, left: 270 }, color: 'black',
 
                         get hpLv() { return 100 + (this.level - 1) * 20 },
                         get dameLv() { return 20 + (this.level - 1) * 10 },
@@ -979,9 +1011,7 @@ fade-out2 {
                                 attackInGame(30, characterInGame)
                             }
                         },
-                        size: { width: 50, height: 50 }, lv: 2,
-                        name: "quái Vật HAH",
-                        position: { top: 200, left: 270 }, color: 'black'
+                        
                      }
                  ],
                 exits: [
@@ -1055,11 +1085,11 @@ fade-out2 {
             },
             {
                 character: { 
-                    // id: 'character', 
+                    // id: socket.id, 
                     charI: 0,
                     position: { top: 0, left: 0 }, 
                     mapI: 0, name: 'Kun1891',
-                    vang: 0, kimcuong: 0,
+                    vang: 9999, kimcuong: 0,
                     level: 1, experience: 0,
 
                 }
@@ -1086,18 +1116,18 @@ fade-out2 {
         
         
     </script>
-    <!-- map -->
+    <!-- map.js -->
     <script>
         // Dữ liệu cho các map
         var five= 5
 
         // Tạo map từ dữ liệu
+        var o = 0
         var characterr = mapsData[mapsData.length-1].character
-        function createMaps() {
-            
+        function createMaps(isChangeMap) {
             if (characterr.mapI === 0) {
                 // characterr.mapI = 1; characterr.charI = 1;
-                characterr.position.top = 48; characterr.position.left = 49
+                characterr.position.top = 100; characterr.position.left = 100
             }
             const mapsContainer = document.getElementById('mapsContainer');
             mapsContainer.innerHTML = ''; // Xóa nội dung cũ khi chuyển map
@@ -1122,14 +1152,15 @@ fade-out2 {
             miniMapp.style.position  = 'absolute'
             miniMappCon.appendChild(miniMapp);
             // tạo nhân vật
-            const character = document.createElement('div');
-            character.classList.add('character');
-            character.id = "character";
-            // character.id = characterr.id;
-            character.style.top = `${characterr.position.top}px`; 
-            character.style.left = `${characterr.position.left}px`;
-            character.style.backgroundColor = characterr.color;
-            map.appendChild(character);
+            if(isChangeMap){
+                players.forEach((player)=>{
+                    const newPlayer = document.getElementById(player.id)
+                    if(!newPlayer){
+                        createPlayer(player)
+                    }
+                })
+            }
+            
 
             const characMini = document.createElement('div');
             characMini.classList.add('characMini');
@@ -1187,12 +1218,11 @@ fade-out2 {
                 
             });
             // Thêm các enemy
-            var o = 0 
+             
             mapData.enemies.forEach(exit => {
                 const enemy = document.createElement('div');
                 const enemyCon = document.createElement('div');
                 enemyCon.classList.add('arrow');
-
                 enemy.classList.add('enemy');
                 enemy.dataset.codeEnemy = o
                 enemy.dataset.id = exit.id
@@ -1235,10 +1265,9 @@ fade-out2 {
         }
 
         // Khởi tạo map
-        // createMaps();
         
         function updatePhoneFramePosition() {
-            const currentCharacter = document.getElementById("character")
+            const currentCharacter = document.getElementById(socket.id)
             const map = currentCharacter.parentElement;
             const mapWidth = map.offsetWidth;
             const mapHeight = map.offsetHeight;
@@ -1290,32 +1319,37 @@ fade-out2 {
 
         var goExit = 0
         function checkCollisionWithExits() {
-            const character = document.getElementById('character');
+            const character = document.getElementById(socket.id);
             const exits = document.querySelectorAll('.exit');
-
             for (const exit of exits) {
                 let exitRect = exit.getBoundingClientRect();
                 let characterRect = character.getBoundingClientRect();
 
-            // Kiểm tra va chạm
-            if (!(characterRect.right < exitRect.left || 
-                characterRect.left > exitRect.right || 
-                characterRect.bottom < exitRect.top || 
-                characterRect.top > exitRect.bottom)) {
-                     // Nếu nhân vật chạm vào ô exit, chuyển map
-                        const characterr = mapsData[mapsData.length - 1].character;
-                        characterr.mapI = exit.dataset.mapI
-                        const newTop = exit.dataset.top, newLeft = exit.dataset.left;  // Lấy giá trị từ data-symbol2
+                // Kiểm tra va chạm
+                if (!(characterRect.right < exitRect.left || 
+                    characterRect.left > exitRect.right || 
+                    characterRect.bottom < exitRect.top || 
+                    characterRect.top > exitRect.bottom)) {
+                        // Nếu nhân vật chạm vào ô exit, chuyển map
+                            const characterr = mapsData[mapsData.length - 1].character;
+                            characterr.mapI = exit.dataset.mapI
+                            
+                            socket.emit('playerPos', mapsData[mapsData.length - 1].character)
+                            const newTop = exit.dataset.top, newLeft = exit.dataset.left;  // Lấy giá trị từ data-symbol2
 
-                    // Đặt vị trí map và tọa độ nhân vật
-                    characterr.position = { top: parseInt(newTop), left: parseInt(newLeft)};  // Đặt vị trí khởi đầu cho map mới
-                        goExit++
-                        return true
-                }
+                        // Đặt vị trí map và tọa độ nhân vật
+                        characterr.position = { top: parseInt(newTop), left: parseInt(newLeft)};  // Đặt vị trí khởi đầu cho map mới
+                            goExit++
+                            return true
+                    }
             }
             return  false
         }
-    
+        function reset(map){
+            const characterr = mapsData[mapsData.length - 1].character;
+            characterr.mapI = map        
+            socket.emit('playerPos', characterr)
+        }
     
         // ------------------ go
     const container = document.getElementById('phoneFrame');
@@ -1330,7 +1364,7 @@ fade-out2 {
         const containCon = document.querySelector('.miniMapp');
         function checkExitAndObstacle() {
             if (checkCollisionWithExits() && goExit == 1) {
-                endMap(); 
+                endMap();
             }
             if (checkCollision()) {
                 // if (checkCollision(characterRect)) {// ??? sao ko truyền đc 
@@ -1338,12 +1372,15 @@ fade-out2 {
             }
         }
         if (interval) clearInterval(interval);
+        
         interval = setInterval(() => {
-            const character = document.getElementById('character');
+            const character = document.getElementById(socket.id);
             const miniChar = document.querySelector('.characMini');
             const characterRect = character.getBoundingClientRect();
             let containerRect = container.getBoundingClientRect();
 
+            
+            
             switch (direction) {
                 case 'left':
                     if (characterRect.left > containerRect.left) {
@@ -1397,13 +1434,164 @@ fade-out2 {
                     }
                     break;
             }
+            mapsData[mapsData.length-1].character.position={left:character.style.left, top:character.style.top}
+           
+            
+            socket.emit('playerPos', mapsData[mapsData.length-1].character)
             checkExitAndObstacle()
             updatePhoneFramePosition()
+            
         }, 30);
     }
+    function getPlayer(){
+        const selfPlayer = players.filter(player=>player.id==socket.id)[0]
+        return selfPlayer
+    }
+    function createPlayer(player){
+        const selfPlayer = players.filter(player=>player.id==socket.id)[0]
+        const mapI= selfPlayer.mapI
+        if(player.mapI == mapI){
+            const map = document.querySelector('.map')
+            const miniMapp = document.querySelector(".miniMap")
+            const character = document.createElement('div');
+            
+            if(player.id != socket.id){
+                const enemyCon = document.createElement('div');
+                enemyCon.classList.add('arrow');
+                character.classList.add('enemy');
+                character.dataset.codeEnemy = o
+                character.dataset.id = o
+                character.dataset.name = player.name
+                character.dataset.lv = player.level
+                character.dataset.isUser = player.id
+                character.isGo = true
+                const enemyMini = document.createElement('div');
+                const enemyMiniArrow = document.createElement('div');
+                enemyMiniArrow.classList.add("arrowMini");
+                enemyMini.classList.add("enemyMini", `enemyMini${o}`);
+                mapsData[mapsData.length-1].character.miniID = o
+                o++
+                
+                enemyMini.style.top = `${player.position.top/five}px`;
+                enemyMini.style.left = `${player.position.left/five}px`;
+                enemyMini.style.backgroundColor = 'violet'; 
+                miniMapp.appendChild(enemyMini).appendChild(enemyMiniArrow)
+                character.style.backgroundColor = 'pink'; 
+                character.appendChild(enemyCon)
 
+                mapsData[player.mapI].enemies.push({
+                        level: player.level, experience: 0, id:0, 
+
+                        armor: 0, maxMana: 300, mana: 0, // in-game
+
+                        hpGear: 0, dameGear: 0, armorGear: 0, // trang bị
+
+                        get hpLv() { return 100 + (this.level - 1) * 20 },
+                        get dameLv() { return 20 + (this.level - 1) * 10 },
+                        get armorLv() { return 3 + (this.level - 1) * 2 },
+                        get maxHealth() { return this.hpGear + this.hpLv },
+                        get maxDame() { return this.dameGear + this.dameLv },
+                        get maxArmor() { return this.armorGear + this.armorLv },
+                        currentHealth: 50,
+
+                        // Skill 1: Trừ 10 máu của quái vật
+                        skill1(characterInGame) {
+                            if (monsterInGame.mana >= 10) {
+                                monsterInGame.mana -= 10; // Giảm mana
+                                attackInGame(10, characterInGame)
+                            }
+                        },
+                        skill2(characterInGame) {
+                            if (monsterInGame.mana >= 10) {
+                                monsterInGame.mana -= 20; // Giảm mana
+                                attackInGame(20, characterInGame)
+                            }
+                        },
+                        skill3(characterInGame) {
+                            if (monsterInGame.mana >= 10) {
+                                monsterInGame.mana -= 30; // Giảm mana
+                                attackInGame(30, characterInGame)
+                            }
+                        },
+                        size: { width: 50, height: 50 }, lv: 5,
+                        name: player.name,
+                        position: { top: 200, left: 123 }, color: 'black'
+                    })
+            }else{
+                character.classList.add('character');
+            }
+            character.classList.add('character');
+            character.id = player.id;
+            character.style.top = player.position.top; 
+            character.style.left = player.position.left;
+            character.style.backgroundColor = player.color;
+            map.appendChild(character);
+        }
+        
+    }
+    
+    socket.on('newPlayer', data=>{
+        players=data
+        
+        players.forEach((player)=>{
+            const newPlayer = document.getElementById(player.id)
+            if(!newPlayer){
+                createPlayer(player)
+                
+                
+            }
+        })
+    })
+    
+    
+    socket.on('deletePlayer', id=>{
+        players.forEach((player, index)=>{
+            if(player.id===id){
+                const currentPlayer = document.getElementById(id)
+                currentPlayer.remove()
+                players.slice(index, 1)
+                
+            }
+        })
+    })
+    
+    
+    socket.on('sendPos', (data)=>{
+        players=data.data
+        players.forEach(player=>{
+            if(player.id != socket.id){
+                const mapI = players.filter(player=>player.id==socket.id)[0].mapI
+                if(player.mapI == mapI){
+                    const newPlayer = document.getElementById(player.id)
+                    const newPlayerMini = document.querySelector(`.enemyMini${player.miniID}`)
+                    if(newPlayerMini){
+                        newPlayerMini.style.top = player.position.top.slice(0,-2)/5+'px'; 
+                        newPlayerMini.style.left = player.position.left.slice(0,-2)/5+'px';
+                    }
+                    if(newPlayer){
+
+                        newPlayer.style.top = player.position.top; 
+                        newPlayer.style.left = player.position.left;
+                    }else{
+                        createPlayer(player)
+                    }
+                }else{
+                    const newPlayer = document.getElementById(player.id)
+                    if(newPlayer){
+                        newPlayer.remove()
+                    }
+                }
+                
+            }
+        })
+        
+        
+        //mapsData[]
+        
+        
+    })
     function checkCollision() {
-        const character = document.getElementById('character');
+        const character = document.getElementById(socket.id);
         const characterRect = character.getBoundingClientRect();
         const obstacles = document.querySelectorAll('.obstacle');
     for (let obstacle of obstacles) {
@@ -1471,6 +1659,26 @@ fade-out2 {
     }
 
     // Gán sự kiện cho các nút
+    document.addEventListener('keydown', (e)=>{
+        switch (e.key) {
+            case 'ArrowUp':
+                handleControl('up')
+                break;
+            case 'ArrowLeft':
+                handleControl('left')
+                break;
+            case 'ArrowDown':
+                handleControl('down')
+                break;
+            case 'ArrowRight':
+                handleControl('right')
+                break;
+        
+            default:
+                break;
+        }
+        
+    })
     document.getElementById('up').addEventListener('click', () => handleControl('up'));
     document.getElementById('down').addEventListener('click', () => handleControl('down'));
     document.getElementById('left').addEventListener('click', () => handleControl('left'));
@@ -1486,8 +1694,10 @@ fade-out2 {
     // document.getElementById('right-btn').addEventListener('click', () => movePlayer(20, 0));
     // Kiểm tra khoảng cách giữa nhân vật và các quái vật
     function checkProximity() {
-        const player = document.getElementById('character');
+        const player = document.getElementById(socket.id);
         const monsters = Array.from(document.querySelectorAll('.enemy'));
+       
+        
         let previousMonstersNear = [...monstersNear]; // Lưu lại danh sách trước đó để so sánh
         monstersNear = []; // Mỗi lần kiểm tra sẽ làm mới danh sách quái vật gần
         monsters.forEach(monster => {
@@ -1497,6 +1707,7 @@ fade-out2 {
             const distanceY = Math.abs(aRect.top - bRect.top);
             if (distanceX <= 100 + aRect.width && distanceY <= 100 + aRect.width) {
                 monstersNear.push(monster); // Thêm quái vật vào danh sách gần
+                
             }
         });
 
@@ -1570,8 +1781,29 @@ fade-out2 {
         showMonsterInfo(monstersNear[currentMonsterIndex], x);
         monsterSelectedManually = true; // Ghi nhớ rằng người chơi đã chọn thủ công
     });
-    // click tấn công
+    socket.on('invited', data=>{
+        alert(data.name + " đã mời bạn !")
+        if(true){
+            socket.emit('accept', {id:data.id, acc:true})
+            handleFight({id:data.id, data:[]})
+        }
+    })
+    socket.on('accepted', data=>{
+        if(data.acc){
+            handleFight({id:data.id})
+        }
+    })
+    
     document.getElementById("monster-info").addEventListener('click', () => {
+        const idUser = monsterPresent.dataset.isUser
+        const player = getPlayer()
+        if(idUser){
+            socket.emit('invite', {name:player.name, target:idUser})
+        }
+        //var idMonster = monsterPresent.dataset.id
+        
+    });
+    function handleFight({data=null, id=null}){
         var idMonster = monsterPresent.dataset.id
         monsterIsInGame(idMonster)
         mimi(); stopCharacter(); 
@@ -1579,11 +1811,10 @@ fade-out2 {
         document.querySelector(".boxMeIn_Game").classList.remove("colorTurn", "flyBtn")
         document.querySelector(".boxMonIn_Game").classList.remove("colorTurn", "flyBtn")
         overlay.classList.remove("none");
-        setTimeout(()=>{showOverLay(1); checkFight()}, 1000)
-    });
-    
+        setTimeout(()=>{showOverLay(1, {id:id, data:data}); checkFight()}, 1000)
+    }
 </script>
-<!-- time -->
+<!-- timee -->
 <script>
     let currentTurn = "character";  // "character" or "monster"
     let tTurns = 0;
@@ -1616,7 +1847,7 @@ fade-out2 {
                 timeLeft--;
                 if (timeLeft >=  0) {updateTimeDisplay()}
                 else {endTurn()}
-            } // else {console.log('hihi')}
+            } 
         }, 1000);
     }
 
@@ -1892,10 +2123,11 @@ exitCancel.addEventListener('click', () => {
                 } else if (x == 2) {
                     document.querySelector(".inGameBattle").classList.add("none")
                 } else if (x == 3) {
-                    goExit = 0; createMaps();
+                    goExit = 0;
+                    createMaps(true);
                     updateCharacterInfo(); 
                     setTimeout(()=>{
-                        mimi();
+                    mimi();
                     checkFight()
                     }, 3000)
                 }
